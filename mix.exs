@@ -51,6 +51,7 @@ defmodule Swap.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
+      {:hammox, "~> 0.7", only: :test},
       {:tesla, "~> 1.4"},
       {:hackney, "~> 1.17"}
     ]
