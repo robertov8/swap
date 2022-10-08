@@ -26,6 +26,7 @@ defmodule Swap.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Swap.DataCase
+      import Swap.Factory
     end
   end
 

@@ -1,7 +1,10 @@
 {
   "skip_files": [
     "lib/swap.ex", 
+    "lib/swap_web.ex", 
+    "lib/swap_web/endpoint.ex", 
     "lib/swap/application.ex", 
+    "lib/swap/repo.ex", 
     "lib/swap/clients/github.ex", 
     "lib/swap_web/telemetry.ex"
   ]
