@@ -173,7 +173,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
   end
 
-  defp setup_http_invalid_request(status \\ 400) do
+  defp setup_http_invalid_request(status) do
     {:error,
      %Tesla.Env{
        body: "",
