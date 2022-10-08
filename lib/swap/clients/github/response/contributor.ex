@@ -3,7 +3,7 @@ defmodule Swap.Clients.Github.Response.Contributor do
 
   @behaviour Swap.Clients.Github.Response
 
-  defstruct id: nil, login: nil, contributions: nil, user: nil
+  defstruct id: nil, login: nil, contributions: nil, url: nil
 
   @impl true
   def parse(contributors), do: {:ok, Enum.map(contributors, &parse_contributor/1)}
@@ -13,7 +13,7 @@ defmodule Swap.Clients.Github.Response.Contributor do
       id: contributor["id"],
       login: contributor["login"],
       contributions: contributor["contributions"],
-      user: contributor["url"]
+      url: contributor["url"]
     }
   end
 end

@@ -16,11 +16,17 @@ defmodule Swap.Clients.Github.HttpTest do
         %{method: :get, url: "https://api.github.com/repos/swap/123/issues"} ->
           setup_http_unprocessable_entity()
 
+        %{method: :get, url: "https://api.github.com/repos/swap/moved_permanently/issues"} ->
+          setup_http_invalid_request(301)
+
         %{method: :get, url: "https://api.github.com/repos/swap/resource_not_found/issues"} ->
           setup_http_invalid_request(404)
 
         %{method: :get, url: "https://api.github.com/repos/swap/spammed/issues"} ->
           setup_http_invalid_request(422)
+
+        %{method: :get, url: "https://api.github.com/repos/swap/unexpected/issues"} ->
+          setup_http_invalid_request(500)
       end)
     end
 
@@ -33,8 +39,8 @@ defmodule Swap.Clients.Github.HttpTest do
            %Response.Issue{
              id: 1,
              title: "Found a bug",
-             author: "octocat",
-             labels: [%{"description" => "Something isn't working", "name" => "bug"}]
+             login: "octocat",
+             labels: [%{description: "Something isn't working", name: "bug"}]
            }
          ]}
 
@@ -45,6 +51,22 @@ defmodule Swap.Clients.Github.HttpTest do
       response = Http.repo_issues("swap", "123")
 
       expected_response = {:error, %Response.Error{status: nil, reason: "Not Found"}}
+
+      assert expected_response == response
+    end
+
+    test "when the repository Unexpected, returns an error" do
+      response = Http.repo_issues("swap", "unexpected")
+
+      expected_response = {:error, %Response.Error{reason: "Error", status: nil}}
+
+      assert expected_response == response
+    end
+
+    test "when the repository Moved permanently, returns an error" do
+      response = Http.repo_issues("swap", "moved_permanently")
+
+      expected_response = {:error, %Response.Error{reason: "Moved permanently", status: 301}}
 
       assert expected_response == response
     end
@@ -63,7 +85,7 @@ defmodule Swap.Clients.Github.HttpTest do
       expected_response =
         {:error,
          %Response.Error{
-           reason: "Validation failed, or spammed.",
+           reason: "Validation failed, or spammed",
            status: 422
          }}
 
@@ -85,6 +107,9 @@ defmodule Swap.Clients.Github.HttpTest do
 
         %{method: :get, url: "https://api.github.com/repos/swap/forbidden/contributors"} ->
           setup_http_invalid_request(403)
+
+        %{method: :get, url: "https://api.github.com/repos/swap/unexpected/contributors"} ->
+          setup_http_invalid_request(500)
       end)
     end
 
@@ -94,13 +119,21 @@ defmodule Swap.Clients.Github.HttpTest do
       expected_response =
         {:ok,
          [
-           %Swap.Clients.Github.Response.Contributor{
+           %Response.Contributor{
              id: 1,
              contributions: 32,
              login: "octocat",
-             user: "https://api.github.com/users/octocat"
+             url: "https://api.github.com/users/octocat"
            }
          ]}
+
+      assert expected_response == response
+    end
+
+    test "when the repository Unexpected, returns an error" do
+      response = Http.repo_contributors("swap", "unexpected")
+
+      expected_response = {:error, %Response.Error{reason: "Error", status: nil}}
 
       assert expected_response == response
     end

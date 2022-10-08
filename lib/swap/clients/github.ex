@@ -1,7 +1,7 @@
 defmodule Swap.Clients.Github do
   @moduledoc false
 
-  @type response :: {:ok | :error, struct()}
+  @type response :: {:ok | :error, list() | struct()}
 
   @callback repo_issues(owner :: String.t(), repo :: String.t()) :: response
   @callback repo_contributors(owner :: String.t(), repo :: String.t()) :: response
