@@ -26,6 +26,11 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :tesla, adapter: Tesla.Adapter.Hackney
+
+config :swap, client_github_base_url: "https://api.github.com"
+config :swap, client_github_adapter: Swap.Clients.Github.Http
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
