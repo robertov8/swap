@@ -23,6 +23,7 @@ defmodule SwapWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import SwapWeb.ConnCase
+      import Swap.Factory
 
       alias SwapWeb.Router.Helpers, as: Routes
 

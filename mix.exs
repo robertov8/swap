@@ -27,7 +27,7 @@ defmodule Swap.MixProject do
   def application do
     [
       mod: {Swap.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:ex_machina, :logger, :runtime_tools]
     ]
   end
 
@@ -49,8 +49,11 @@ defmodule Swap.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
+      {:ecto_commons, "~> 0.3.3"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
+      {:ex_machina, "~> 2.7.0", only: [:dev, :test]},
+      {:faker, "~> 0.17", only: :test},
       {:hammox, "~> 0.7", only: :test},
       {:tesla, "~> 1.4"},
       {:hackney, "~> 1.17"}
