@@ -9,4 +9,11 @@ defmodule Swap.Factory do
       owner: "swap"
     }
   end
+
+  def webhook_factory do
+    %Swap.Webhooks.Webhook{
+      target: Faker.Internet.url(),
+      repository: insert(:repository)
+    }
+  end
 end
