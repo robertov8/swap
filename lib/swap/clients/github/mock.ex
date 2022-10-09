@@ -6,7 +6,7 @@ defmodule Swap.Clients.Github.Mock do
   alias Swap.Clients.Github.Response
 
   @impl true
-  def repo_issues(_owner, "valid_repo") do
+  def repo_issues(_owner, "valid_repo", _token) do
     {:ok,
      [
        %Response.Issue{
@@ -18,7 +18,7 @@ defmodule Swap.Clients.Github.Mock do
      ]}
   end
 
-  def repo_issues(_owner, "invalid_repo") do
+  def repo_issues(_owner, "invalid_repo", _token) do
     {:error,
      %Swap.Clients.Github.Response.Error{
        reason: "Error",
@@ -27,7 +27,7 @@ defmodule Swap.Clients.Github.Mock do
   end
 
   @impl true
-  def repo_contributors(_owner, "valid_repo") do
+  def repo_contributors(_owner, "valid_repo", _token) do
     {:ok,
      [
        %Response.Contributor{
@@ -39,7 +39,7 @@ defmodule Swap.Clients.Github.Mock do
      ]}
   end
 
-  def repo_contributors(_owner, "invalid_repo") do
+  def repo_contributors(_owner, "invalid_repo", _token) do
     {:error,
      %Swap.Clients.Github.Response.Error{
        reason: "Error",

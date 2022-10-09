@@ -6,8 +6,8 @@ defmodule SwapWeb.Payload.WebhookPayload do
   import Ecto.Changeset
   import EctoCommons.URLValidator
 
-  @required_fields ~w(target)a
-  @optional_fields ~w(repository_id repo owner)a
+  @required_fields ~w(target repository_provider)a
+  @optional_fields ~w(repository_id repo owner repository_token)a
 
   @primary_key false
   embedded_schema do
@@ -15,6 +15,8 @@ defmodule SwapWeb.Payload.WebhookPayload do
     field :repository_id, :binary_id
     field :repo, :string
     field :owner, :string
+    field :repository_provider, :string, default: "github"
+    field :repository_token, :string
   end
 
   def create_from_params(data) do

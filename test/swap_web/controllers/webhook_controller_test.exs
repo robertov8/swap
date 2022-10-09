@@ -17,7 +17,12 @@ defmodule SwapWeb.WebhookControllerTest do
   describe "create webhook" do
     test "renders webhook when data is valid", %{conn: conn} do
       %{id: repository_id, name: repository_name, owner: repository_owner} = insert(:repository)
-      valid_attrs = %{target: "http://www.swap.com.br", repository_id: repository_id}
+
+      valid_attrs = %{
+        target: "http://www.swap.com.br",
+        repository_id: repository_id,
+        repository_token: "token"
+      }
 
       conn = post(conn, Routes.webhook_path(conn, :create), valid_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
@@ -46,7 +51,8 @@ defmodule SwapWeb.WebhookControllerTest do
       conn =
         post(conn, Routes.webhook_path(conn, :create), %{
           target: "http://www.swap.com.br",
-          repository_id: Ecto.UUID.generate()
+          repository_id: Ecto.UUID.generate(),
+          repository_token: "token"
         })
 
       assert json_response(conn, 404)["errors"] != %{}

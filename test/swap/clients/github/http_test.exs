@@ -7,7 +7,7 @@ defmodule Swap.Clients.Github.HttpTest do
 
   alias Swap.Clients.Github.{Http, Response}
 
-  describe "repo_issues/2" do
+  describe "repo_issues/3" do
     setup do
       mock(fn
         %{method: :get, url: "https://api.github.com/repos/swap/valid_repo/issues"} ->
@@ -31,7 +31,22 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository is valid, returns success" do
-      response = Http.repo_issues("swap", "valid_repo")
+      response = Http.repo_issues("swap", "valid_repo", nil)
+
+      expected_response =
+        {:ok,
+         [
+           %Response.Issue{
+             id: 1,
+             title: "Found a bug",
+             login: "octocat",
+             labels: [%{description: "Something isn't working", name: "bug"}]
+           }
+         ]}
+
+      assert expected_response == response
+
+      response = Http.repo_issues("swap", "valid_repo", "token")
 
       expected_response =
         {:ok,
@@ -93,7 +108,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
   end
 
-  describe "repo_contributors/2" do
+  describe "repo_contributors/3" do
     setup do
       mock(fn
         %{method: :get, url: "https://api.github.com/repos/swap/valid_repo/contributors"} ->
@@ -114,7 +129,22 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository is valid, returns success" do
-      response = Http.repo_contributors("swap", "valid_repo")
+      response = Http.repo_contributors("swap", "valid_repo", "token")
+
+      expected_response =
+        {:ok,
+         [
+           %Response.Contributor{
+             id: 1,
+             contributions: 32,
+             login: "octocat",
+             url: "https://api.github.com/users/octocat"
+           }
+         ]}
+
+      assert expected_response == response
+
+      response = Http.repo_contributors("swap", "valid_repo", nil)
 
       expected_response =
         {:ok,

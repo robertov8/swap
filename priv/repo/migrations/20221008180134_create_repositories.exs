@@ -6,6 +6,7 @@ defmodule Swap.Repo.Migrations.CreateRepositories do
       add :id, :binary_id, primary_key: true
       add :name, :string
       add :owner, :string
+      add :provider, :string
 
       timestamps()
     end
