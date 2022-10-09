@@ -64,4 +64,77 @@ defmodule Swap.RepositoriesTest do
       refute Repositories.get_repository(repository.id)
     end
   end
+
+  describe "repository_stories" do
+    alias Swap.Repositories.RepositoryStory
+
+    @invalid_attrs %{data: nil}
+
+    test "list_repository_stories/0 returns all stories" do
+      %{id: id, data: data, repository_id: repository_id} = insert(:repository_story)
+
+      assert [
+               %RepositoryStory{
+                 id: ^id,
+                 data: ^data,
+                 repository_id: ^repository_id
+               }
+             ] = Repositories.list_repository_stories()
+    end
+
+    test "get_repository_story!/1 returns the repository_story with given id" do
+      %{id: id, data: data, repository_id: repository_id} = insert(:repository_story)
+
+      assert %RepositoryStory{
+               id: ^id,
+               data: ^data,
+               repository_id: ^repository_id
+             } = Repositories.get_repository_story(id)
+    end
+
+    test "create_repository_story/1 with valid data creates a repository_story" do
+      repository = insert(:repository)
+      valid_attrs = %{data: %{}, repository_id: repository.id}
+
+      assert {:ok, %RepositoryStory{} = repository_story} =
+               Repositories.create_repository_story(valid_attrs)
+
+      assert repository_story.data == %{}
+    end
+
+    test "create_repository_story/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Repositories.create_repository_story(@invalid_attrs)
+    end
+
+    test "update_repository_story/2 with valid data updates the repository_story" do
+      repository_story = insert(:repository_story)
+      update_attrs = %{data: %{}}
+
+      assert {:ok, %RepositoryStory{} = repository_story} =
+               Repositories.update_repository_story(repository_story, update_attrs)
+
+      assert repository_story.data == %{}
+    end
+
+    test "update_repository_story/2 with invalid data returns error changeset" do
+      %{id: id, data: data, repository_id: repository_id} =
+        repository_story = insert(:repository_story)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Repositories.update_repository_story(repository_story, @invalid_attrs)
+
+      assert %Swap.Repositories.RepositoryStory{
+               id: ^id,
+               data: ^data,
+               repository_id: ^repository_id
+             } = Repositories.get_repository_story(id)
+    end
+
+    test "delete_repository_story/1 deletes the repository_story" do
+      repository_story = insert(:repository_story)
+
+      assert {:ok, %RepositoryStory{}} = Repositories.delete_repository_story(repository_story)
+      refute Repositories.get_repository_story(repository_story.id)
+    end
+  end
 end
