@@ -19,9 +19,14 @@ defmodule Swap.Factory do
     }
   end
 
-  def webhook_factory do
-    %Swap.Webhooks.Webhook{
-      target: Faker.Internet.url(),
+  def repository_story_factory do
+    %Swap.Repositories.RepositoryStory{
+      data: %{
+        "user" => "user",
+        "repository" => "repository",
+        "issue" => [],
+        "contributors" => []
+      },
       repository: insert(:repository)
     }
   end
