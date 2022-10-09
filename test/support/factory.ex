@@ -30,4 +30,12 @@ defmodule Swap.Factory do
       repository: insert(:repository)
     }
   end
+
+  def notification_factory do
+    %Swap.Notifications.Notification{
+      status: "200",
+      response: %{"status" => "ok"},
+      webhook: insert(:webhook)
+    }
+  end
 end
