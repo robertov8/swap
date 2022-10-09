@@ -4,26 +4,45 @@ defmodule Swap.Providers do
   """
 
   alias Swap.Providers.Response
+  alias Swap.Webhooks.Webhook
 
-  @callback get_repo(owner :: String.t(), repo :: String.t()) ::
+  @callback limit_reached?(token :: String.t() | nil) :: boolean()
+
+  @callback get_repo(owner :: String.t(), repo :: String.t(), token :: String.t() | nil) ::
               {:ok, Response.Repository.t()} | {:error, any()}
+
+  @doc """
+  Essa função retorna se o limite diario de requisições foi atingido
+
+  ## Examples
+      iex> limit_reached?(%Webhook{})
+      iex> true
+      iex>
+      iex> limit_reached?(%Webhook{})
+      iex> false
+  """
+  @spec limit_reached?(webhook :: Webhook.t()) :: boolean()
+  def limit_reached?(%Webhook{repository_token: token, repository: repository}) do
+    module = get_provider(repository.provider)
+
+    module.limit_reached?(token)
+  end
 
   @doc """
   Essa função retorna informações de um repositorio
 
   ## Examples
-      iex> get_repo("swap", "swap", :github)
+      iex> get_repo(%Webhook{})
       iex> %Response.Repository{}
-
-      iex> get_repo("swap", "invalid", :github)
+      iex>
+      iex> get_repo(%Repository{}, %Webhook{})
       iex> nil
   """
-  @spec get_repo(owner :: String.t(), repo :: String.t(), provider :: atom()) ::
-          Response.Repository.t() | nil
-  def get_repo(owner, repo, provider \\ :github) do
-    module = get_provider(provider)
+  @spec get_repo(webhook :: Webhook.t()) :: Response.Repository.t() | nil
+  def get_repo(%Webhook{repository_token: token, repository: repository}) do
+    module = get_provider(repository.provider)
 
-    case module.get_repo(owner, repo) do
+    case module.get_repo(repository.owner, repository.name, token) do
       {:ok, repo} -> repo
       {:error, _reason} -> nil
     end
