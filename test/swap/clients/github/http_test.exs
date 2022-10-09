@@ -63,7 +63,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository does not exist, returns an error" do
-      response = Http.repo_issues("swap", "123")
+      response = Http.repo_issues("swap", "123", "token")
 
       expected_response = {:error, %Response.Error{status: nil, reason: "Not Found"}}
 
@@ -71,7 +71,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository Unexpected, returns an error" do
-      response = Http.repo_issues("swap", "unexpected")
+      response = Http.repo_issues("swap", "unexpected", "token")
 
       expected_response = {:error, %Response.Error{reason: "Error", status: nil}}
 
@@ -79,7 +79,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository Moved permanently, returns an error" do
-      response = Http.repo_issues("swap", "moved_permanently")
+      response = Http.repo_issues("swap", "moved_permanently", "token")
 
       expected_response = {:error, %Response.Error{reason: "Moved permanently", status: 301}}
 
@@ -87,7 +87,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository Resource not found, returns an error" do
-      response = Http.repo_issues("swap", "resource_not_found")
+      response = Http.repo_issues("swap", "resource_not_found", "token")
 
       expected_response = {:error, %Response.Error{reason: "Resource not found", status: 404}}
 
@@ -95,7 +95,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository Validation failed, or the endpoint has been spammed, returns an error" do
-      response = Http.repo_issues("swap", "spammed")
+      response = Http.repo_issues("swap", "spammed", "token")
 
       expected_response =
         {:error,
@@ -161,7 +161,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository Unexpected, returns an error" do
-      response = Http.repo_contributors("swap", "unexpected")
+      response = Http.repo_contributors("swap", "unexpected", "token")
 
       expected_response = {:error, %Response.Error{reason: "Error", status: nil}}
 
@@ -169,7 +169,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository empty, returns an error" do
-      response = Http.repo_contributors("swap", "empty")
+      response = Http.repo_contributors("swap", "empty", "token")
 
       expected_response =
         {:error,
@@ -182,7 +182,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository Resource not found, returns an error" do
-      response = Http.repo_contributors("swap", "resource_not_found")
+      response = Http.repo_contributors("swap", "resource_not_found", "token")
 
       expected_response = {:error, %Response.Error{reason: "Resource not found", status: 404}}
 
@@ -190,7 +190,7 @@ defmodule Swap.Clients.Github.HttpTest do
     end
 
     test "when the repository Forbidden, returns an error" do
-      response = Http.repo_contributors("swap", "forbidden")
+      response = Http.repo_contributors("swap", "forbidden", "token")
 
       expected_response =
         {:error,
@@ -198,6 +198,65 @@ defmodule Swap.Clients.Github.HttpTest do
            reason: "Forbidden",
            status: 403
          }}
+
+      assert expected_response == response
+    end
+  end
+
+  describe "rate_limit/1" do
+    setup do
+      mock(fn
+        %{
+          headers: [_, {"Authorization", "Bearer not_modified"}],
+          method: :get,
+          url: "https://api.github.com/rate_limit"
+        } ->
+          setup_http_invalid_request(304)
+
+        %{
+          headers: [_, {"Authorization", "Bearer not_found"}],
+          method: :get,
+          url: "https://api.github.com/rate_limit"
+        } ->
+          setup_http_invalid_request(404)
+
+        %{method: :get, url: "https://api.github.com/rate_limit"} ->
+          setup_http_success(:rate_limit)
+      end)
+    end
+
+    test "when the token is valid, returns success" do
+      response = Http.rate_limit("token")
+
+      expected_response =
+        {:ok,
+         %Swap.Clients.Github.Response.RateLimit{
+           limit: 5000,
+           remaining: 4999,
+           reset: 1_372_700_873,
+           used: 1
+         }}
+
+      assert expected_response == response
+
+      response = Http.rate_limit(nil)
+
+      expected_response =
+        {:ok,
+         %Swap.Clients.Github.Response.RateLimit{
+           limit: 5000,
+           remaining: 4999,
+           reset: 1_372_700_873,
+           used: 1
+         }}
+
+      assert expected_response == response
+    end
+
+    test "when the limit Resource not found, returns an error" do
+      response = Http.rate_limit("not_found")
+
+      expected_response = {:error, %Response.Error{reason: "Resource not found", status: 404}}
 
       assert expected_response == response
     end
@@ -251,6 +310,17 @@ defmodule Swap.Clients.Github.HttpTest do
         ]
       }
     ])
+  end
+
+  defp setup_http_success(:rate_limit) do
+    build_http(%{
+      "rate" => %{
+        "limit" => 5000,
+        "remaining" => 4999,
+        "reset" => 1_372_700_873,
+        "used" => 1
+      }
+    })
   end
 
   defp build_http(body, status \\ 200) do

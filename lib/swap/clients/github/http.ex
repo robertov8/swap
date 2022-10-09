@@ -13,7 +13,7 @@ defmodule Swap.Clients.Github.Http do
   @impl true
   @spec repo_issues(owner :: String.t(), repo :: String.t(), token :: String.t() | nil) ::
           response()
-  def repo_issues(owner, repo, token \\ nil) do
+  def repo_issues(owner, repo, token) do
     token
     |> client()
     |> get("/repos/#{owner}/#{repo}/issues")
@@ -24,12 +24,22 @@ defmodule Swap.Clients.Github.Http do
   @impl true
   @spec repo_contributors(owner :: String.t(), repo :: String.t(), token :: String.t() | nil) ::
           response()
-  def repo_contributors(owner, repo, token \\ nil) do
+  def repo_contributors(owner, repo, token) do
     token
     |> client()
     |> get("/repos/#{owner}/#{repo}/contributors")
     |> handle_response()
     |> Response.parse(:contributors)
+  end
+
+  @impl true
+  @spec rate_limit(token :: String.t() | nil) :: response()
+  def rate_limit(token) do
+    token
+    |> client()
+    |> get("/rate_limit")
+    |> handle_response()
+    |> Response.parse(:rate_limit)
   end
 
   defp handle_response({:ok, %Env{body: %{"documentation_url" => _, "message" => message}}}) do

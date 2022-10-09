@@ -4,7 +4,7 @@ defmodule Swap.Repositories do
   """
 
   alias Swap.Repo
-  alias Swap.Repositories.{Repository, RepositoryStory}
+  alias Swap.Repositories.Repository
 
   @doc """
   Returns the list of repositories.
