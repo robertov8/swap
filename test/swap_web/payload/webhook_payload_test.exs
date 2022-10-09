@@ -3,20 +3,18 @@ defmodule SwapWeb.Payload.WebhookPayloadTest do
 
   use Swap.DataCase
 
-  import Swap.Factory
-
   alias Ecto.Changeset
   alias SwapWeb.Payload.WebhookPayload
 
   describe "create_from_params/1" do
     setup do
-      repository = insert(:repository)
-
       params = %{
         "target" => "http://www.swap.com.br",
-        "repository_id" => repository.id,
+        "repository_id" => Ecto.UUID.generate(),
         "repo" => nil,
-        "owner" => nil
+        "owner" => nil,
+        "repository_token" => "token",
+        "repository_provider" => "github"
       }
 
       {:ok, %{params: params}}
@@ -29,6 +27,8 @@ defmodule SwapWeb.Payload.WebhookPayloadTest do
       assert payload.repository_id == params["repository_id"]
       refute payload.repo
       refute payload.owner
+      assert payload.repository_token == params["repository_token"]
+      assert payload.repository_provider == params["repository_provider"]
 
       params = %{params | "repository_id" => nil, "repo" => "swap", "owner" => "swap"}
 
@@ -38,6 +38,8 @@ defmodule SwapWeb.Payload.WebhookPayloadTest do
       refute payload.repository_id
       assert payload.repo == params["repo"]
       assert payload.owner == params["owner"]
+      assert payload.repository_token == params["repository_token"]
+      assert payload.repository_provider == params["repository_provider"]
     end
 
     test "when parameters are invalid, returns an error" do

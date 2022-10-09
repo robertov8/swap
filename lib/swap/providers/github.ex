@@ -10,9 +10,9 @@ defmodule Swap.Providers.Github do
   alias Swap.Providers.Response
 
   @impl true
-  def get_repo(owner, repo) do
-    with {:ok, issues} <- Clients.Github.repo_issues(owner, repo),
-         {:ok, contributors} <- Clients.Github.repo_contributors(owner, repo) do
+  def get_repo(owner, repo, token) do
+    with {:ok, issues} <- Clients.Github.repo_issues(owner, repo, token),
+         {:ok, contributors} <- Clients.Github.repo_contributors(owner, repo, token) do
       {:ok,
        %Response.Repository{
          user: owner,

@@ -22,26 +22,29 @@ defmodule Swap.RepositoriesTest do
     end
 
     test "create_repository/1 with valid data creates a repository" do
-      valid_attrs = %{name: "some name", owner: "some owner"}
+      valid_attrs = %{name: "some name", owner: "some owner", provider: "github"}
 
       assert {:ok, %Repository{} = repository} = Repositories.create_repository(valid_attrs)
       assert repository.name == "some name"
       assert repository.owner == "some owner"
+      assert repository.provider == :github
     end
 
     test "get_or_create_repository/1 returns the repository with given name and owner" do
-      valid_attrs = %{repo: "some name", owner: "some owner"}
+      valid_attrs = %{repo: "some name", owner: "some owner", repository_provider: "github"}
 
       assert {:ok, %Repository{} = repository} =
                Repositories.get_or_create_repository(valid_attrs)
 
       assert repository.name == "some name"
       assert repository.owner == "some owner"
+      assert repository.provider == :github
 
-      %{name: name, owner: owner} = insert(:repository)
+      %{name: name, owner: owner, provider: provider} = insert(:repository)
 
-      assert {:ok, repository} =
-               Repositories.get_or_create_repository(%{repo: name, owner: owner})
+      valid_attrs = %{repo: name, owner: owner, repository_provider: provider}
+
+      assert {:ok, repository} = Repositories.get_or_create_repository(valid_attrs)
 
       assert repository.name == name
       assert repository.owner == owner

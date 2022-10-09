@@ -6,6 +6,7 @@ defmodule Swap.Repo.Migrations.CreateWebhooks do
       add :id, :binary_id, primary_key: true
       add :target, :string
       add :repository_id, references(:repositories, on_delete: :nothing, type: :binary_id)
+      add :repository_token, :string
 
       timestamps()
     end

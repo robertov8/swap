@@ -6,6 +6,6 @@ services:
     #restart: always
     ports:
       - 5432:5432
-    command: ["postgres", "-c", "log_statement=all"]
+    # command: ["postgres", "-c", "log_statement=all"]
     environment:
       POSTGRES_PASSWORD: postgres

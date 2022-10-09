@@ -4,7 +4,7 @@ defmodule Swap.Repositories do
   """
 
   alias Swap.Repo
-  alias Swap.Repositories.Repository
+  alias Swap.Repositories.{Repository, RepositoryStory}
 
   @doc """
   Returns the list of repositories.
@@ -70,10 +70,13 @@ defmodule Swap.Repositories do
     end
   end
 
-  def get_or_create_repository(%{repo: repo, owner: owner} = attrs) do
-    attrs = Map.put(attrs, :name, repo)
+  def get_or_create_repository(%{repo: repo, owner: owner, repository_provider: provider} = attrs) do
+    attrs =
+      attrs
+      |> Map.put(:name, repo)
+      |> Map.put(:provider, provider)
 
-    case Repo.get_by(Repository, name: repo, owner: owner) do
+    case Repo.get_by(Repository, name: repo, owner: owner, provider: provider) do
       nil -> create_repository(attrs)
       repository -> {:ok, repository}
     end

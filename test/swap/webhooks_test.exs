@@ -8,10 +8,19 @@ defmodule Swap.WebhooksTest do
   alias Swap.Webhooks
 
   describe "webhooks" do
+    setup do
+      {:ok, %{webhook: insert(:webhook)}}
+    end
+
     alias Swap.Webhooks.Webhook
 
-    test "list_webhooks/0 returns all webhooks" do
-      %{id: id, target: target, repository_id: repository_id} = insert(:webhook)
+    test "list_webhooks/0 returns all webhooks", %{webhook: webhook} do
+      %{
+        id: id,
+        target: target,
+        repository_id: repository_id,
+        repository: %{id: repository_id, name: repository_name}
+      } = webhook
 
       response = Webhooks.list_webhooks()
 
@@ -19,29 +28,55 @@ defmodule Swap.WebhooksTest do
                %Webhook{
                  id: ^id,
                  target: ^target,
-                 repository_id: ^repository_id
+                 repository_id: ^repository_id,
+                 repository: %{
+                   id: ^repository_id,
+                   name: ^repository_name,
+                   owner: "swap",
+                   provider: :github
+                 }
                }
              ] = response
     end
 
-    test "get_webhook/1 returns the webhook with given id" do
-      %{id: id, target: target, repository_id: repository_id} = insert(:webhook)
+    test "get_webhook/1 returns the webhook with given id", %{webhook: webhook} do
+      %{
+        id: id,
+        target: target,
+        repository_id: repository_id,
+        repository: %{id: repository_id, name: repository_name}
+      } = webhook
 
       response = Webhooks.get_webhook(id)
 
       assert %Webhook{
                id: ^id,
                target: ^target,
-               repository_id: ^repository_id
+               repository_id: ^repository_id,
+               repository: %{
+                 id: ^repository_id,
+                 name: ^repository_name,
+                 owner: "swap",
+                 provider: :github
+               }
              } = response
     end
 
     test "create_webhook/1 with valid data creates a webhook" do
-      repository = insert(:repository)
-      valid_attrs = %{target: "some target", repository_id: repository.id}
+      %{id: repository_id, name: repository_name} = insert(:repository)
+      valid_attrs = %{target: "some target", repository_id: repository_id}
 
-      assert {:ok, %Webhook{} = webhook} = Webhooks.create_webhook(valid_attrs)
-      assert webhook.target == "some target"
+      assert {:ok,
+              %Webhook{
+                target: "some target",
+                repository_id: ^repository_id,
+                repository: %{
+                  id: ^repository_id,
+                  name: ^repository_name,
+                  owner: "swap",
+                  provider: :github
+                }
+              }} = Webhooks.create_webhook(valid_attrs)
     end
 
     test "create_webhook/1 with invalid data returns error changeset" do

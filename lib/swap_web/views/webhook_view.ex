@@ -17,7 +17,8 @@ defmodule SwapWeb.WebhookView do
       repository: %{
         id: webhook.repository.id,
         name: webhook.repository.name,
-        owner: webhook.repository.owner
+        owner: webhook.repository.owner,
+        provider: webhook.repository.provider
       },
       inserted_at: webhook.inserted_at,
       updated_at: webhook.updated_at
