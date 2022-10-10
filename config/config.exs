@@ -31,6 +31,30 @@ config :tesla, adapter: Tesla.Adapter.Hackney
 config :swap, client_github_base_url: "https://api.github.com"
 config :swap, client_github_adapter: Swap.Clients.Github.Http
 
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
+config :swap, Oban,
+  repo: Swap.Repo,
+  prefix: "jobs",
+  queues: [
+    default: 1,
+    schedule_repository_stories: 10,
+    repository_stories: 1,
+    schedule_webhooks: 10,
+    webhooks: 1
+  ],
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 86400},
+    {
+      Oban.Plugins.Cron,
+      timezone: "America/Sao_Paulo",
+      crontab: [
+        {"@daily", Swap.Workers.ScheduleWebhooksWorker},
+        {"@hourly", Swap.Workers.ScheduleRepositoryStoriesWorker}
+      ]
+    }
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

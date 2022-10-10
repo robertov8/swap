@@ -82,7 +82,42 @@ defmodule Swap.RepositoriesTest do
              ] = Repositories.list_repository_stories()
     end
 
-    test "get_repository_story!/1 returns the repository_story with given id" do
+    test "list_repository_stories/0 returns all stories by filter" do
+      insert(:repository_story)
+
+      today = ~N[2022-01-01 14:00:00]
+      start_date = ~N[2022-01-01 00:00:00]
+      end_date = ~N[2022-01-01 23:59:59]
+
+      %{id: id, data: data, repository_id: repository_id} =
+        insert(:repository_story, inserted_at: today)
+
+      assert [
+               %RepositoryStory{
+                 id: ^id,
+                 data: ^data,
+                 repository_id: ^repository_id
+               }
+             ] = Repositories.list_repository_stories(id: id)
+
+      assert [
+               %RepositoryStory{
+                 id: ^id,
+                 data: ^data,
+                 repository_id: ^repository_id
+               }
+             ] = Repositories.list_repository_stories(repository_id: repository_id)
+
+      assert [
+               %RepositoryStory{
+                 id: ^id,
+                 data: ^data,
+                 repository_id: ^repository_id
+               }
+             ] = Repositories.list_repository_stories(inserted_at: [start_date, end_date])
+    end
+
+    test "get_repository_story/1 returns the repository_story with given id" do
       %{id: id, data: data, repository_id: repository_id} = insert(:repository_story)
 
       assert %RepositoryStory{
@@ -90,6 +125,32 @@ defmodule Swap.RepositoriesTest do
                data: ^data,
                repository_id: ^repository_id
              } = Repositories.get_repository_story(id)
+    end
+
+    test "get_repository_story_by/1 returns the repository_story with given filter" do
+      insert(:repository_story)
+
+      today = ~N[2022-01-01 14:00:00]
+      start_date = ~N[2022-01-01 00:00:00]
+      end_date = ~N[2022-01-01 23:59:59]
+
+      %{id: id, data: data, repository_id: repository_id} =
+        insert(:repository_story, inserted_at: today)
+
+      refute Repositories.get_repository_story_by()
+      refute Repositories.get_repository_story_by([])
+
+      assert %RepositoryStory{
+               id: ^id,
+               data: ^data,
+               repository_id: ^repository_id
+             } = Repositories.get_repository_story_by(id: id)
+
+      assert %RepositoryStory{
+               id: ^id,
+               data: ^data,
+               repository_id: ^repository_id
+             } = Repositories.get_repository_story_by(inserted_at: [start_date, end_date])
     end
 
     test "create_repository_story/1 with valid data creates a repository_story" do
