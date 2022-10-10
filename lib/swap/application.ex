@@ -15,16 +15,17 @@ defmodule Swap.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Swap.PubSub},
       # Start the Endpoint (http/https)
-      SwapWeb.Endpoint,
+      SwapWeb.Endpoint
       # Start a worker by calling: Swap.Worker.start_link(arg)
       # {Swap.Worker, arg}
-      {Oban, Application.fetch_env!(:swap, Oban)}
     ]
+
+    oban_children = oban_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Swap.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(children ++ oban_children, opts)
   end
 
   # Tell Phoenix to update the endpoint configuration
@@ -33,5 +34,13 @@ defmodule Swap.Application do
   def config_change(changed, _new, removed) do
     SwapWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp oban_children do
+    if Application.get_env(:swap, :oban_enabled) do
+      [{Oban, Application.fetch_env!(:swap, Oban)}]
+    else
+      []
+    end
   end
 end

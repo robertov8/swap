@@ -32,6 +32,7 @@ config :swap, client_github_base_url: "https://api.github.com"
 config :swap, client_github_adapter: Swap.Clients.Github.Http
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+config :swap, oban_enabled: Mix.env() == :dev || System.get_env("OBAN_ENABLED")
 
 config :swap, Oban,
   repo: Swap.Repo,
