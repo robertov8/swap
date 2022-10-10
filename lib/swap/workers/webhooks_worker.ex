@@ -19,10 +19,12 @@ defmodule Swap.Workers.WebhooksWorker do
     with %Webhook{} = webhook <- Webhooks.get_webhook(webhook_id),
          %RepositoryStory{data: data} <- get_last_repository_story(webhook) do
       make_post_request(webhook, data)
+    else
+      nil -> {:cancel, :not_found}
     end
   end
 
-  defp make_post_request(%Webhook{target: nil}, _data), do: :ok
+  defp make_post_request(%Webhook{target: nil}, _data), do: {:cancel, :invalid_url}
 
   defp make_post_request(%Webhook{target: target} = webhook, data) do
     target

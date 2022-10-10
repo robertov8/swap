@@ -23,7 +23,7 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
         |> do_perform(webhook)
 
       nil ->
-        :ok
+        {:cancel, :not_found}
     end
   end
 
@@ -35,17 +35,12 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
         data: Map.from_struct(response)
       })
     else
-      true ->
-        %{webhook_id: webhook.id}
-        |> new(schedule_in: {1, :hour})
-        |> Oban.insert()
-
-      nil ->
-        {:cancel, :invalid_response}
+      true -> schedule_job(webhook.id, Mix.env())
+      nil -> {:cancel, :invalid_response}
     end
   end
 
-  defp do_perform(_count_last_hour_repository_stories, _webhook), do: :ok
+  defp do_perform(_count_last_hour_repository_stories, _webhook), do: {:ok, :updated}
 
   defp count_last_hour_repository_stories(repository_id) do
     end_date = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
@@ -54,5 +49,16 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
     [repository_id: repository_id, inserted_at: [start_date, end_date]]
     |> Repositories.list_repository_stories()
     |> Enum.count()
+  end
+
+  defp schedule_job(_webhook_id, :test), do: {:ok, :rescheduled}
+
+  # coveralls-ignore-start
+  defp schedule_job(webhook_id, _env) do
+    %{webhook_id: webhook_id}
+    |> new(schedule_in: {1, :hour})
+    |> Oban.insert()
+
+    {:ok, :rescheduled}
   end
 end

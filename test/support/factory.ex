@@ -13,7 +13,7 @@ defmodule Swap.Factory do
 
   def repository_factory do
     %Swap.Repositories.Repository{
-      name: Faker.Internet.domain_word(),
+      name: Faker.Internet.user_name(),
       owner: "swap",
       provider: "github"
     }

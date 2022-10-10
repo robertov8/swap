@@ -14,14 +14,18 @@ defmodule Swap.Workers.ScheduleWebhooksWorker do
 
   @impl true
   def perform(_job) do
-    Webhooks.list_webhooks(order_repository_token: :asc)
-    |> Enum.with_index()
-    |> Enum.each(&schedule_job/1)
+    webhooks =
+      Webhooks.list_webhooks(order_repository_token: :asc)
+      |> Enum.with_index()
+      |> Enum.map(&schedule_job(&1, Mix.env()))
 
-    :ok
+    {:ok, webhooks}
   end
 
-  defp schedule_job({webhook, index}) do
+  defp schedule_job({webhook_id, _index}, :test), do: webhook_id
+
+  # coveralls-ignore-start
+  defp schedule_job({webhook, index}, _env) do
     %{webhook_id: webhook.id}
     |> WebhooksWorker.new(schedule_in: {index * @seconds, :seconds})
     |> Oban.insert()

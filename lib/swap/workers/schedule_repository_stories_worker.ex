@@ -14,16 +14,20 @@ defmodule Swap.Workers.ScheduleRepositoryStoriesWorker do
 
   @impl true
   def perform(_job) do
-    Webhooks.list_webhooks(order_repository_token: :asc)
-    |> Enum.group_by(& &1.repository.owner, &[&1.repository.name, &1.id])
-    |> Enum.map(fn {_owner, [[_repo, webhook_id] | _]} -> webhook_id end)
-    |> Enum.with_index()
-    |> Enum.each(&schedule_job/1)
+    webhooks =
+      Webhooks.list_webhooks(order_repository_token: :asc)
+      |> Enum.group_by(& &1.repository.owner, &[&1.repository.name, &1.id])
+      |> Enum.map(fn {_owner, [[_repo, webhook_id] | _]} -> webhook_id end)
+      |> Enum.with_index()
+      |> Enum.map(&schedule_job(&1, Mix.env()))
 
-    :ok
+    {:ok, webhooks}
   end
 
-  defp schedule_job({webhook_id, index}) do
+  defp schedule_job({webhook_id, _index}, :test), do: webhook_id
+
+  # coveralls-ignore-start
+  defp schedule_job({webhook_id, index}, _env) do
     %{webhook_id: webhook_id}
     |> RepositoryStoriesWorker.new(schedule_in: {index * @seconds, :seconds})
     |> Oban.insert()
