@@ -71,4 +71,8 @@ defmodule Swap.Clients.Github.Mock do
        used: 3
      }}
   end
+
+  def rate_limit("invalid") do
+    {:error, :timeout}
+  end
 end

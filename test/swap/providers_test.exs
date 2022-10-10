@@ -15,16 +15,22 @@ defmodule Swap.ProvidersTest do
   end
 
   describe "limit_reached?/1" do
-    test "when the token is valid, returns response" do
+    test "when the token is valid, returns ok" do
       webhook = insert(:webhook, repository_token: "token")
 
-      refute Swap.Providers.limit_reached?(webhook)
+      assert {:ok, 4997} = Swap.Providers.limit_reached(webhook)
     end
 
-    test "when the token is nil, returns false" do
+    test "when the token is nil, returns error" do
       webhook = insert(:webhook, repository_token: nil)
 
-      assert Swap.Providers.limit_reached?(webhook)
+      assert {:error, 0} = Swap.Providers.limit_reached(webhook)
+    end
+
+    test "when the token is invalid, returns error" do
+      webhook = insert(:webhook, repository_token: "invalid")
+
+      assert {:error, :timeout} = Swap.Providers.limit_reached(webhook)
     end
   end
 

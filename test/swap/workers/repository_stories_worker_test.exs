@@ -27,6 +27,8 @@ defmodule Swap.Workers.RepositoryStoriesWorkerTest do
     webhook = insert(:webhook, repository_token: nil)
 
     assert {:ok, :rescheduled} = perform_job(RepositoryStoriesWorker, %{webhook_id: webhook.id})
+
+    assert Repo.exists?(Swap.Notifications.Notification)
     refute Repo.exists?(RepositoryStory)
   end
 

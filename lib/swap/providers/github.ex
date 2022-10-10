@@ -11,16 +11,16 @@ defmodule Swap.Providers.Github do
   alias Swap.Providers.Response, as: ProviderResponse
 
   @impl true
-  def limit_reached?(token) do
+  def limit_reached(token) do
     case Clients.Github.rate_limit(token) do
       {:ok, %ClientResponse.RateLimit{remaining: 0}} ->
-        true
+        {:error, 0}
 
-      {:ok, %ClientResponse.RateLimit{remaining: _remaining}} ->
-        false
+      {:ok, %ClientResponse.RateLimit{remaining: remaining}} ->
+        {:ok, remaining}
 
-      _ ->
-        true
+      reason ->
+        reason
     end
   end
 
