@@ -56,7 +56,9 @@ defmodule Swap.MixProject do
       {:faker, "~> 0.17", only: :test},
       {:hammox, "~> 0.7", only: :test},
       {:tesla, "~> 1.4"},
-      {:hackney, "~> 1.17"}
+      {:hackney, "~> 1.17"},
+      {:oban, "~> 2.13"},
+      {:tzdata, "~> 1.1"}
     ]
   end
 

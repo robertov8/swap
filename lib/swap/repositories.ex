@@ -3,8 +3,10 @@ defmodule Swap.Repositories do
   The Repositories context.
   """
 
+  import Ecto.Query
+
   alias Swap.Repo
-  alias Swap.Repositories.{Repository, RepositoryStory}
+  alias Swap.Repositories.{Repository, RepositoryStory, RepositoryStoryQuery}
 
   @doc """
   Returns the list of repositories.
@@ -107,8 +109,21 @@ defmodule Swap.Repositories do
       [%RepositoryStory{}, ...]
 
   """
-  def list_repository_stories do
-    Repo.all(RepositoryStory)
+  def list_repository_stories(filters \\ []) do
+    filters
+    |> Enum.reduce(RepositoryStory, fn filter, query ->
+      case filter do
+        {:repository_id, repository_id} ->
+          RepositoryStoryQuery.with_repository_id(query, repository_id)
+
+        {:inserted_at, [start_date, end_date]} ->
+          RepositoryStoryQuery.with_inserted_at(query, start_date, end_date)
+
+        _ ->
+          query
+      end
+    end)
+    |> Repo.all()
   end
 
   @doc """
@@ -124,6 +139,22 @@ defmodule Swap.Repositories do
 
   """
   def get_repository_story(id), do: Repo.get(RepositoryStory, id)
+
+  def get_repository_story_by(filters \\ []) do
+    filters
+    |> Enum.reduce(RepositoryStory, fn filter, query ->
+      case filter do
+        {:inserted_at, [start_date, end_date]} ->
+          RepositoryStoryQuery.with_inserted_at(query, start_date, end_date)
+
+        _ ->
+          query
+      end
+    end)
+    |> limit(1)
+    |> order_by(desc: :inserted_at)
+    |> Repo.one()
+  end
 
   @doc """
   Creates a repository_story.

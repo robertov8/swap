@@ -6,7 +6,7 @@ defmodule Swap.Webhooks do
   import Ecto.Query, warn: false
   alias Swap.Repo
 
-  alias Swap.Webhooks.Webhook
+  alias Swap.Webhooks.{Webhook, WebhookQuery}
 
   @doc """
   Returns the list of webhooks.
@@ -17,8 +17,17 @@ defmodule Swap.Webhooks do
       [%Webhook{}, ...]
 
   """
-  def list_webhooks do
-    Webhook
+  def list_webhooks(filters \\ []) do
+    filters
+    |> Enum.reduce(Webhook, fn filter, query ->
+      case filter do
+        {:order_repository_token, direction} ->
+          WebhookQuery.order_repository_token(query, direction)
+
+        _ ->
+          query
+      end
+    end)
     |> preload(:repository)
     |> Repo.all()
   end
