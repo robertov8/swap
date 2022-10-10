@@ -28,15 +28,24 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
   end
 
   defp do_perform(0, %Webhook{repository: repository} = webhook) do
-    with false <- Providers.limit_reached?(webhook),
+    with {:ok, _remaining} <- Providers.limit_reached(webhook),
          %ProviderResponse.Repository{} = response <- Providers.get_repo(webhook) do
       Repositories.create_repository_story(%{
         repository_id: repository.id,
         data: Map.from_struct(response)
       })
     else
-      true -> schedule_job(webhook.id, Mix.env())
-      nil -> {:cancel, :invalid_response}
+      nil ->
+        {:cancel, :invalid_response}
+
+      {:error, reason} ->
+        Swap.Notifications.create_notification(%{
+          status: "500",
+          response: %{message: "invalid token or limit reached", reason: "#{inspect(reason)}"},
+          webhook_id: webhook.id
+        })
+
+        schedule_job(webhook.id, Mix.env())
     end
   end
 

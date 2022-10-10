@@ -6,7 +6,7 @@ defmodule Swap.Providers do
   alias Swap.Providers.Response
   alias Swap.Webhooks.Webhook
 
-  @callback limit_reached?(token :: String.t() | nil) :: boolean()
+  @callback limit_reached(token :: String.t() | nil) :: {:ok | :error, any()}
 
   @callback get_repo(owner :: String.t(), repo :: String.t(), token :: String.t() | nil) ::
               {:ok, Response.Repository.t()} | {:error, any()}
@@ -15,17 +15,20 @@ defmodule Swap.Providers do
   Essa função retorna se o limite diario de requisições foi atingido
 
   ## Examples
-      iex> limit_reached?(%Webhook{})
-      iex> true
+      iex> limit_reached(%Webhook{})
+      iex> {:error, 0}
       iex>
-      iex> limit_reached?(%Webhook{})
-      iex> false
+      iex> limit_reached(%Webhook{})
+      iex> {:ok, 10}
+      iex>
+      iex> limit_reached(%Webhook{})
+      iex> {:error, :timeout}
   """
-  @spec limit_reached?(webhook :: Webhook.t()) :: boolean()
-  def limit_reached?(%Webhook{repository_token: token, repository: repository}) do
+  @spec limit_reached(webhook :: Webhook.t()) :: {:ok | :error, any()}
+  def limit_reached(%Webhook{repository_token: token, repository: repository}) do
     module = get_provider(repository.provider)
 
-    module.limit_reached?(token)
+    module.limit_reached(token)
   end
 
   @doc """
