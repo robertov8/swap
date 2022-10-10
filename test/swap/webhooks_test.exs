@@ -39,6 +39,30 @@ defmodule Swap.WebhooksTest do
              ] = response
     end
 
+    test "list_webhooks/0 returns all webhooks by filter" do
+      insert(:webhook, repository_token: "a")
+      insert(:webhook, repository_token: "b")
+      insert(:webhook, repository_token: "c")
+
+      response = Webhooks.list_webhooks(sort_repository_token: :asc)
+
+      assert [
+               %Webhook{repository_token: "a"},
+               %Webhook{repository_token: "b"},
+               %Webhook{repository_token: "c"},
+               %Webhook{repository_token: nil}
+             ] = response
+
+      response = Webhooks.list_webhooks(sort_repository_token: :desc)
+
+      assert [
+               %Webhook{repository_token: nil},
+               %Webhook{repository_token: "c"},
+               %Webhook{repository_token: "b"},
+               %Webhook{repository_token: "a"}
+             ] = response
+    end
+
     test "get_webhook/1 returns the webhook with given id", %{webhook: webhook} do
       %{
         id: id,

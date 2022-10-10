@@ -15,9 +15,10 @@ defmodule Swap.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Swap.PubSub},
       # Start the Endpoint (http/https)
-      SwapWeb.Endpoint
+      SwapWeb.Endpoint,
       # Start a worker by calling: Swap.Worker.start_link(arg)
       # {Swap.Worker, arg}
+      {Oban, Application.fetch_env!(:swap, Oban)}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
