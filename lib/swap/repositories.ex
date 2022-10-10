@@ -108,6 +108,8 @@ defmodule Swap.Repositories do
       iex> list_repository_stories()
       [%RepositoryStory{}, ...]
 
+      iex> list_repository_stories(repository_id: "b8247ddb-6717-4e72-92d1-4f0295734836")
+      [%RepositoryStory{}, ...]
   """
   def list_repository_stories(filters \\ []) do
     filters
@@ -120,7 +122,8 @@ defmodule Swap.Repositories do
           RepositoryStoryQuery.with_inserted_at(query, start_date, end_date)
 
         _ ->
-          query
+          binding = Keyword.new([filter])
+          where(query, ^binding)
       end
     end)
     |> Repo.all()
@@ -140,7 +143,28 @@ defmodule Swap.Repositories do
   """
   def get_repository_story(id), do: Repo.get(RepositoryStory, id)
 
-  def get_repository_story_by(filters \\ []) do
+  @doc """
+  Gets a single repository_story.
+
+  ## Examples
+
+      iex> get_repository_story_by(inserted_at: [~N[2022-01-01 00:00:00], ~N[2022-01-01 23:59:59]])
+      %RepositoryStory{}
+
+      iex> get_repository_story_by(id: "0560dcee-2b3c-410c-90c3-e2b45255f4b3")
+      nil
+
+      iex> get_repository_story_by()
+      nil
+
+      iex> get_repository_story_by([])
+      nil
+  """
+  def get_repository_story_by, do: nil
+
+  def get_repository_story_by([]), do: nil
+
+  def get_repository_story_by(filters) do
     filters
     |> Enum.reduce(RepositoryStory, fn filter, query ->
       case filter do
@@ -148,11 +172,12 @@ defmodule Swap.Repositories do
           RepositoryStoryQuery.with_inserted_at(query, start_date, end_date)
 
         _ ->
-          query
+          binding = Keyword.new([filter])
+          where(query, ^binding)
       end
     end)
-    |> limit(1)
     |> order_by(desc: :inserted_at)
+    |> limit(1)
     |> Repo.one()
   end
 

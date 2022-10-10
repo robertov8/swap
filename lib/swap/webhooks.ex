@@ -21,8 +21,8 @@ defmodule Swap.Webhooks do
     filters
     |> Enum.reduce(Webhook, fn filter, query ->
       case filter do
-        {:order_repository_token, direction} ->
-          WebhookQuery.order_repository_token(query, direction)
+        {:sort_repository_token, direction} ->
+          WebhookQuery.sort_repository_token(query, direction)
 
         _ ->
           query

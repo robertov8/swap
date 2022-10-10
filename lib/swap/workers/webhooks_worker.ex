@@ -18,15 +18,15 @@ defmodule Swap.Workers.WebhooksWorker do
   def perform(%Job{args: %{"webhook_id" => webhook_id}}) do
     with %Webhook{} = webhook <- Webhooks.get_webhook(webhook_id),
          %RepositoryStory{data: data} <- get_last_repository_story(webhook) do
-      make_request_post(webhook, data)
+      make_post_request(webhook, data)
     end
   end
 
-  defp make_request_post(%Webhook{target: nil}, _data), do: :ok
+  defp make_post_request(%Webhook{target: nil}, _data), do: :ok
 
-  defp make_request_post(%Webhook{target: target} = webhook, data) do
+  defp make_post_request(%Webhook{target: target} = webhook, data) do
     target
-    |> HttpClient.make_request_post(data)
+    |> HttpClient.make_post_request(data)
     |> create_notification(webhook)
   end
 

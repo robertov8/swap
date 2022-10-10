@@ -5,13 +5,14 @@ defmodule Swap.Webhooks.WebhookQuery do
 
   alias Swap.Webhooks.Webhook
 
-  def order_repository_token(query \\ base(), direction)
+  @spec sort_repository_token(query :: any(), direction :: :asc | :desc) :: Ecto.Query.t()
+  def sort_repository_token(query \\ base(), direction)
 
-  def order_repository_token(query, :asc) do
+  def sort_repository_token(query, :asc) do
     order_by(query, asc: :repository_token)
   end
 
-  def order_repository_token(query, :desc) do
+  def sort_repository_token(query, :desc) do
     order_by(query, desc: :repository_token)
   end
 

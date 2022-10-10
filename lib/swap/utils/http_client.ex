@@ -8,7 +8,9 @@ defmodule Swap.Utils.HttpClient do
   plug Tesla.Middleware.JSON
   plug Tesla.Middleware.Headers, [{"content-type", "application/json"}]
 
-  def make_request_post(url, body) do
+  @spec make_post_request(url :: String.t(), body :: map()) ::
+          {:error, integer(), any()} | {:ok, 200, any()}
+  def make_post_request(url, body) do
     now = NaiveDateTime.utc_now()
 
     client()

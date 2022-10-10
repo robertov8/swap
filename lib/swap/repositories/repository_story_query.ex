@@ -10,6 +10,11 @@ defmodule Swap.Repositories.RepositoryStoryQuery do
     where(query, repository_id: ^repository_id)
   end
 
+  @spec with_inserted_at(
+          query :: any(),
+          start_date :: NaiveDateTime.t(),
+          end_date :: NaiveDateTime.t()
+        ) :: Ecto.Query.t()
   def with_inserted_at(query \\ base(), start_date, end_date) do
     where(query, [q], fragment("? BETWEEN ? AND ?", q.inserted_at, ^start_date, ^end_date))
   end
