@@ -8,8 +8,6 @@ defmodule Swap.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Ecto repository
-      Swap.Repo,
       # Start the Telemetry supervisor
       SwapWeb.Telemetry,
       # Start the PubSub system
@@ -20,12 +18,18 @@ defmodule Swap.Application do
       # {Swap.Worker, arg}
     ]
 
-    oban_children = oban_children()
+    # Start the Ecto repository
+    repo = repo_children()
+
+    # Start Oban
+    oban = oban_children()
+
+    children = repo ++ oban ++ children
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Swap.Supervisor]
-    Supervisor.start_link(children ++ oban_children, opts)
+    Supervisor.start_link(children, opts)
   end
 
   # Tell Phoenix to update the endpoint configuration
@@ -36,8 +40,16 @@ defmodule Swap.Application do
     :ok
   end
 
+  defp repo_children do
+    if Application.get_env(:swap, :repo_enabled) do
+      [Swap.Repo]
+    else
+      []
+    end
+  end
+
   defp oban_children do
-    if Application.get_env(:swap, :oban_enabled) do
+    if Application.get_env(:swap, :repo_enabled) do
       [{Oban, Application.fetch_env!(:swap, Oban)}]
     else
       []
