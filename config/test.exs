@@ -31,3 +31,4 @@ config :tesla, adapter: Tesla.Mock
 config :swap, client_github_adapter: ClientFakeGithubMock
 
 config :swap, Oban, testing: :inline
+config :swap, oban_enabled: true
