@@ -1,5 +1,5 @@
 # Swap
-
+[![Test](https://github.com/robertov8/swap/actions/workflows/test.yml/badge.svg)](https://github.com/robertov8/swap/actions/workflows/test.yml)
 
 ## About the project
 
