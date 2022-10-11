@@ -7,6 +7,8 @@ defmodule Swap.Application do
 
   @impl true
   def start(_type, _args) do
+    :ets.new(Swap, [:set, :public, :named_table])
+
     children =
       [
         # Start the Telemetry supervisor

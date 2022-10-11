@@ -39,10 +39,38 @@ defmodule Swap.Providers.Github do
   end
 
   defp parse_issues(issue) do
-    %{title: issue.title, author: issue.login, labels: issue.labels}
+    %ProviderResponse.Issue{
+      title: issue.title,
+      author: issue.login,
+      labels: issue.labels
+    }
   end
 
   defp parse_contributors(contributor) do
-    %{name: contributor.login, user: contributor.url, qtd_commits: contributor.contributions}
+    %ProviderResponse.Contributor{
+      name: contributor.login,
+      user: nil,
+      qtd_commits: contributor.contributions
+    }
+  end
+
+  @impl true
+  def get_user(username, token) do
+    case Clients.Github.user(username, token) do
+      {:ok, user} ->
+        %ProviderResponse.User{
+          login: user.login,
+          url: user.url,
+          name: user.name,
+          avatar_url: user.avatar_url,
+          company: user.company,
+          email: user.email
+        }
+
+      {:error, _reason} ->
+        %ProviderResponse.User{
+          login: username
+        }
+    end
   end
 end

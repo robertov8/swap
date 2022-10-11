@@ -12,6 +12,7 @@ defmodule Swap.Workers.RepositoryStoriesWorkerTest do
     Hammox.stub(ClientFakeGithubMock, :rate_limit, &GithubMock.rate_limit/1)
     Hammox.stub(ClientFakeGithubMock, :repo_issues, &GithubMock.repo_issues/3)
     Hammox.stub(ClientFakeGithubMock, :repo_contributors, &GithubMock.repo_contributors/3)
+    Hammox.stub(ClientFakeGithubMock, :user, &GithubMock.user/2)
 
     :ok
   end

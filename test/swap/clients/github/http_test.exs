@@ -262,6 +262,47 @@ defmodule Swap.Clients.Github.HttpTest do
     end
   end
 
+  describe "user/1" do
+    setup do
+      mock(fn
+        %{method: :get, url: "https://api.github.com/users/valid"} ->
+          setup_http_success(:user)
+
+        %{method: :get, url: "https://api.github.com/users/not_found"} ->
+          setup_http_invalid_request(404)
+      end)
+    end
+
+    test "when the user is valid, returns success" do
+      response = Http.user("valid", "token")
+
+      expected_response =
+        {:ok,
+         %Response.User{
+           avatar_url: "https://github.com/images/error/octocat_happy.gif",
+           company: "GitHub",
+           email: "octocat@github.com",
+           login: "octocat",
+           name: "monalisa octocat",
+           url: "https://api.github.com/users/octocat"
+         }}
+
+      assert expected_response == response
+
+      response = Http.user("valid", nil)
+
+      assert expected_response == response
+    end
+
+    test "when the user not found, returns an error" do
+      response = Http.user("not_found", "token")
+
+      expected_response = {:error, %Response.Error{reason: "Resource not found", status: 404}}
+
+      assert expected_response == response
+    end
+  end
+
   defp setup_http_invalid_request(status) do
     {:error,
      %Tesla.Env{
@@ -320,6 +361,18 @@ defmodule Swap.Clients.Github.HttpTest do
         "reset" => 1_372_700_873,
         "used" => 1
       }
+    })
+  end
+
+  defp setup_http_success(:user) do
+    build_http(%{
+      "id" => 1,
+      "login" => "octocat",
+      "url" => "https://api.github.com/users/octocat",
+      "name" => "monalisa octocat",
+      "avatar_url" => "https://github.com/images/error/octocat_happy.gif",
+      "company" => "GitHub",
+      "email" => "octocat@github.com"
     })
   end
 

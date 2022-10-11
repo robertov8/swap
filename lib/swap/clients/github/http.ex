@@ -42,6 +42,16 @@ defmodule Swap.Clients.Github.Http do
     |> Response.parse(:rate_limit)
   end
 
+  @impl true
+  @spec user(username :: String.t(), token :: String.t() | nil) :: response()
+  def user(username, token) do
+    token
+    |> client()
+    |> get("/users/#{username}")
+    |> handle_response()
+    |> Response.parse(:user)
+  end
+
   defp handle_response({:ok, %Env{body: %{"documentation_url" => _, "message" => message}}}) do
     {:error, message}
   end
