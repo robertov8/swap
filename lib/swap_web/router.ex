@@ -8,7 +8,9 @@ defmodule SwapWeb.Router do
   scope "/api", SwapWeb do
     pipe_through :api
 
-    resources "/webhooks", WebhookController, only: [:index, :create, :show, :delete]
+    resources "/webhooks", WebhookController, only: [:index, :create, :show, :delete] do
+      resources "/notifications", NotificationController, only: [:index, :show]
+    end
   end
 
   # Enables LiveDashboard only for development

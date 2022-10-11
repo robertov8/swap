@@ -17,8 +17,13 @@ defmodule Swap.Notifications do
       [%Notification{}, ...]
 
   """
-  def list_notifications do
-    Repo.all(Notification)
+  def list_notifications(filters \\ []) do
+    filters
+    |> Enum.reduce(Notification, fn filter, query ->
+      binding = Keyword.new([filter])
+      where(query, ^binding)
+    end)
+    |> Repo.all()
   end
 
   @doc """
@@ -26,14 +31,26 @@ defmodule Swap.Notifications do
 
   ## Examples
 
-      iex> get_notification(123)
+      iex> get_notification_by(123)
       %Notification{}
 
-      iex> get_notification(456)
+      iex> get_notification_by(456)
       nil
 
   """
-  def get_notification(id), do: Repo.get(Notification, id)
+  def get_notification_by, do: nil
+
+  def get_notification_by([]), do: nil
+
+  def get_notification_by(filters) do
+    filters
+    |> Enum.reduce(Notification, fn filter, query ->
+      binding = Keyword.new([filter])
+      where(query, ^binding)
+    end)
+    |> limit(1)
+    |> Repo.one()
+  end
 
   @doc """
   Creates a notification.
