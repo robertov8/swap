@@ -8,7 +8,15 @@ defmodule Swap.Clients.Github.Mock do
   @impl true
   def repo_issues(owner, repo, _token), do: repo_issues(owner, repo)
 
-  def repo_issues(_owner, "valid_repo") do
+  def repo_issues(_owner, "invalid_repo") do
+    {:error,
+     %Response.Error{
+       reason: "Error",
+       status: 500
+     }}
+  end
+
+  def repo_issues(_owner, _repo) do
     {:ok,
      [
        %Response.Issue{
@@ -18,14 +26,6 @@ defmodule Swap.Clients.Github.Mock do
          labels: [%{description: "Something isn't working", name: "bug"}]
        }
      ]}
-  end
-
-  def repo_issues(_owner, "invalid_repo") do
-    {:error,
-     %Response.Error{
-       reason: "Error",
-       status: 500
-     }}
   end
 
   @impl true
@@ -41,6 +41,10 @@ defmodule Swap.Clients.Github.Mock do
          url: "https://api.github.com/users/octocat"
        }
      ]}
+  end
+
+  def repo_contributors(_owner, "empty_contributors_repo") do
+    {:ok, []}
   end
 
   def repo_contributors(_owner, "invalid_repo") do
@@ -74,5 +78,26 @@ defmodule Swap.Clients.Github.Mock do
 
   def rate_limit("invalid") do
     {:error, :timeout}
+  end
+
+  @impl true
+  def user(_username, nil) do
+    {:error,
+     %Response.Error{
+       reason: "Error",
+       status: 500
+     }}
+  end
+
+  def user(_username, _token) do
+    {:ok,
+     %Swap.Clients.Github.Response.User{
+       login: "robertov8",
+       url: "https://api.github.com/users/robertov8",
+       name: "Roberto Ribeiro",
+       avatar_url: "https://avatars.githubusercontent.com/u/5904702?v=4",
+       company: nil,
+       email: nil
+     }}
   end
 end

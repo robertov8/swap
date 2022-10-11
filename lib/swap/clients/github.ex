@@ -11,12 +11,16 @@ defmodule Swap.Clients.Github do
 
   @callback rate_limit(token :: String.t() | nil) :: response()
 
+  @callback user(username :: String.t(), token :: String.t() | nil) :: response()
+
   def repo_issues(owner, repo, token \\ nil), do: adapter().repo_issues(owner, repo, token)
 
   def repo_contributors(owner, repo, token \\ nil),
     do: adapter().repo_contributors(owner, repo, token)
 
   def rate_limit(token \\ nil), do: adapter().rate_limit(token)
+
+  def user(username, token \\ nil), do: adapter().user(username, token)
 
   def adapter, do: Application.fetch_env!(:swap, :client_github_adapter)
 end

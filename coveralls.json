@@ -1,6 +1,7 @@
 {
   "skip_files": [
     "lib/swap.ex", 
+    "lib/swap/cache.ex",
     "lib/swap_web.ex", 
     "lib/swap_web/endpoint.ex", 
     "lib/swap/application.ex", 

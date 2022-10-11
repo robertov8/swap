@@ -54,13 +54,6 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
     |> Enum.count()
   end
 
-  defp create_repository_story(repository, response) do
-    Repositories.create_repository_story(%{
-      repository_id: repository.id,
-      data: Map.from_struct(response)
-    })
-  end
-
   defp create_notification(webhook, reason) do
     Notifications.create_notification(%{
       status: "500",
@@ -70,6 +63,15 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
         reason: "#{inspect(reason)}"
       }
     })
+  end
+
+  defp create_repository_story(repository, response) do
+    data =
+      response
+      |> Jason.encode!()
+      |> Jason.decode!(keys: :atoms)
+
+    Repositories.create_repository_story(%{repository_id: repository.id, data: data})
   end
 
   defp schedule_job(_webhook_id, :test), do: {:ok, :rescheduled}
