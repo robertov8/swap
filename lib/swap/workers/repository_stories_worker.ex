@@ -8,6 +8,7 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
   require Logger
 
   alias Oban.Job
+  alias Swap.Notifications
   alias Swap.Providers
   alias Swap.Providers.Response, as: ProviderResponse
   alias Swap.Repositories
@@ -30,20 +31,13 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
   defp do_perform(0, %Webhook{repository: repository} = webhook) do
     with {:ok, _remaining} <- Providers.limit_reached(webhook),
          %ProviderResponse.Repository{} = response <- Providers.get_repo(webhook) do
-      Repositories.create_repository_story(%{
-        repository_id: repository.id,
-        data: Map.from_struct(response)
-      })
+      create_repository_story(repository, response)
     else
       nil ->
         {:cancel, :invalid_response}
 
       {:error, reason} ->
-        Swap.Notifications.create_notification(%{
-          status: "500",
-          response: %{message: "invalid token or limit reached", reason: "#{inspect(reason)}"},
-          webhook_id: webhook.id
-        })
+        create_notification(webhook, reason)
 
         schedule_job(webhook.id, Mix.env())
     end
@@ -58,6 +52,24 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
     [repository_id: repository_id, inserted_at: [start_date, end_date]]
     |> Repositories.list_repository_stories()
     |> Enum.count()
+  end
+
+  defp create_repository_story(repository, response) do
+    Repositories.create_repository_story(%{
+      repository_id: repository.id,
+      data: Map.from_struct(response)
+    })
+  end
+
+  defp create_notification(webhook, reason) do
+    Notifications.create_notification(%{
+      status: "500",
+      webhook_id: webhook.id,
+      response: %{
+        message: "invalid token or limit reached",
+        reason: "#{inspect(reason)}"
+      }
+    })
   end
 
   defp schedule_job(_webhook_id, :test), do: {:ok, :rescheduled}

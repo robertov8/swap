@@ -15,7 +15,7 @@ defmodule Swap.Workers.ScheduleRepositoryStoriesWorker do
   @impl true
   def perform(_job) do
     webhooks =
-      Webhooks.list_webhooks(order_repository_token: :asc)
+      Webhooks.list_webhooks(sort_repository_token: :asc)
       |> Enum.group_by(& &1.repository.owner, &[&1.repository.name, &1.id])
       |> Enum.map(fn {_owner, [[_repo, webhook_id] | _]} -> webhook_id end)
       |> Enum.with_index()

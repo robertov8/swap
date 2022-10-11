@@ -39,9 +39,9 @@ config :swap, Oban,
   prefix: "jobs",
   queues: [
     default: 1,
-    schedule_repository_stories: 10,
+    schedule_repository_stories: 1,
     repository_stories: 1,
-    schedule_webhooks: 10,
+    schedule_webhooks: 1,
     webhooks: 1
   ],
   plugins: [
