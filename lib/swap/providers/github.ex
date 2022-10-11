@@ -1,7 +1,7 @@
 defmodule Swap.Providers.Github do
   @moduledoc """
-  Esse modulo contem a camada de tradução entre a resposta
-  github e a resposta resperada pelo resto da aplicação
+  This module contains the translation layer between the response
+  github and the response expected by the rest of the application
   """
 
   @behaviour Swap.Providers

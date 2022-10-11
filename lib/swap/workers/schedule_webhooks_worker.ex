@@ -15,7 +15,7 @@ defmodule Swap.Workers.ScheduleWebhooksWorker do
   @impl true
   def perform(_job) do
     webhooks =
-      Webhooks.list_webhooks(order_repository_token: :asc)
+      Webhooks.list_webhooks(sort_repository_token: :asc)
       |> Enum.with_index()
       |> Enum.map(&schedule_job(&1, Mix.env()))
 

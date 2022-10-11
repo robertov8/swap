@@ -8,6 +8,7 @@ defmodule Swap.Workers.WebhooksWorker do
   require Logger
 
   alias Oban.Job
+  alias Swap.Notifications
   alias Swap.Repositories
   alias Swap.Repositories.RepositoryStory
   alias Swap.Utils.HttpClient
@@ -33,13 +34,13 @@ defmodule Swap.Workers.WebhooksWorker do
   end
 
   defp create_notification({:ok, status, _body}, %Webhook{id: webhook_id}) do
-    Swap.Notifications.create_notification(%{status: "#{status}", webhook_id: webhook_id})
+    Notifications.create_notification(%{status: "#{status}", webhook_id: webhook_id})
 
     {:ok, "status: #{status}"}
   end
 
   defp create_notification({:error, status, body}, %Webhook{id: webhook_id}) do
-    Swap.Notifications.create_notification(%{
+    Notifications.create_notification(%{
       status: "#{status}",
       response: %{data: inspect(body)},
       webhook_id: webhook_id

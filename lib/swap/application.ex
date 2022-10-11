@@ -7,24 +7,19 @@ defmodule Swap.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      # Start the Telemetry supervisor
-      SwapWeb.Telemetry,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: Swap.PubSub},
-      # Start the Endpoint (http/https)
-      SwapWeb.Endpoint
-      # Start a worker by calling: Swap.Worker.start_link(arg)
-      # {Swap.Worker, arg}
-    ]
-
-    # Start the Ecto repository
-    repo = repo_children()
-
-    # Start Oban
-    oban = oban_children()
-
-    children = repo ++ oban ++ children
+    children =
+      [
+        # Start the Telemetry supervisor
+        SwapWeb.Telemetry,
+        # Start the PubSub system
+        {Phoenix.PubSub, name: Swap.PubSub},
+        # Start the Endpoint (http/https)
+        SwapWeb.Endpoint
+        # Start a worker by calling: Swap.Worker.start_link(arg)
+        # {Swap.Worker, arg}
+      ]
+      |> start_oban_children()
+      |> start_repo_children()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -40,19 +35,19 @@ defmodule Swap.Application do
     :ok
   end
 
-  defp repo_children do
+  defp start_repo_children(children) do
     if Application.get_env(:swap, :repo_enabled) do
-      [Swap.Repo]
+      [Swap.Repo | children]
     else
-      []
+      children
     end
   end
 
-  defp oban_children do
+  defp start_oban_children(children) do
     if Application.get_env(:swap, :repo_enabled) do
-      [{Oban, Application.fetch_env!(:swap, Oban)}]
+      [{Oban, Application.fetch_env!(:swap, Oban)} | children]
     else
-      []
+      children
     end
   end
 end

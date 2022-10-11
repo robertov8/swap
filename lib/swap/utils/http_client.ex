@@ -1,5 +1,7 @@
 defmodule Swap.Utils.HttpClient do
-  @moduledoc false
+  @moduledoc """
+  This module contains the http client used to send requests to webhooks
+  """
 
   use Tesla
 
