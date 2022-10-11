@@ -104,7 +104,10 @@ defmodule Swap.WebhooksTest do
     end
 
     test "create_webhook/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Webhooks.create_webhook(%{target: nil})
+      assert {:error, %Ecto.Changeset{} = changeset} = Webhooks.create_webhook(%{target: nil})
+
+      assert "can't be blank" in errors_on(changeset).target
+      assert "can't be blank" in errors_on(changeset).repository_id
     end
 
     test "delete_webhook/1 deletes the webhook" do

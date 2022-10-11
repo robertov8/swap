@@ -164,7 +164,11 @@ defmodule Swap.RepositoriesTest do
     end
 
     test "create_repository_story/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Repositories.create_repository_story(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{} = changeset} =
+               Repositories.create_repository_story(@invalid_attrs)
+
+      assert "can't be blank" in errors_on(changeset).data
+      assert "can't be blank" in errors_on(changeset).repository_id
     end
 
     test "update_repository_story/2 with valid data updates the repository_story" do
@@ -181,8 +185,10 @@ defmodule Swap.RepositoriesTest do
       %{id: id, data: data, repository_id: repository_id} =
         repository_story = insert(:repository_story)
 
-      assert {:error, %Ecto.Changeset{}} =
+      assert {:error, %Ecto.Changeset{} = changeset} =
                Repositories.update_repository_story(repository_story, @invalid_attrs)
+
+      assert "can't be blank" in errors_on(changeset).data
 
       assert %Swap.Repositories.RepositoryStory{
                id: ^id,
