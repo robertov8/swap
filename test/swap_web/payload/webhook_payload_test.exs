@@ -42,6 +42,24 @@ defmodule SwapWeb.Payload.WebhookPayloadTest do
       assert payload.repository_provider == params["repository_provider"]
     end
 
+    test "when target is invalid, returns an error", %{params: params} do
+      params = %{params | "target" => "swap.com.br"}
+
+      assert {:error, %Changeset{} = changeset} = WebhookPayload.create_from_params(params)
+
+      assert %Changeset{valid?: false} = changeset
+      assert "is not a valid url" in errors_on(changeset).target
+    end
+
+    test "when repository_provider is invalid, returns an error", %{params: params} do
+      params = %{params | "repository_provider" => "gitlab"}
+
+      assert {:error, %Changeset{} = changeset} = WebhookPayload.create_from_params(params)
+
+      assert %Changeset{valid?: false} = changeset
+      assert "is invalid" in errors_on(changeset).repository_provider
+    end
+
     test "when parameters are invalid, returns an error" do
       assert {:error, %Changeset{} = changeset} = WebhookPayload.create_from_params(%{})
 

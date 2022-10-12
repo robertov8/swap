@@ -23,6 +23,7 @@ defmodule SwapWeb.Payload.WebhookPayload do
     %__MODULE__{}
     |> cast(data, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
+    |> validate_inclusion(:repository_provider, ~w(github))
     |> validate_url(:target)
     |> validate_repository(data)
     |> apply_action(:payload)
