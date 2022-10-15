@@ -1,4 +1,4 @@
-defmodule Swap.Utils.HTTPClientTest do
+defmodule Utils.HTTPClientTest do
   @moduledoc false
 
   use ExUnit.Case
