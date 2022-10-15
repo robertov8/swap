@@ -6,8 +6,7 @@ defmodule Swap.Providers.Github do
 
   @behaviour Swap.Providers
 
-  alias Swap.Clients
-  alias Swap.Clients.Github.Response, as: ClientResponse
+  alias Clients.Github.Response, as: ClientResponse
   alias Swap.Providers.Response, as: ProviderResponse
 
   @impl true

@@ -1,7 +1,7 @@
-defmodule Swap.Clients.Github.Response.RateLimit do
+defmodule Clients.Github.Response.RateLimit do
   @moduledoc false
 
-  @behaviour Swap.Clients.Github.Response
+  @behaviour Clients.Github.Response
 
   defstruct limit: nil, remaining: nil, reset: nil, used: nil
 

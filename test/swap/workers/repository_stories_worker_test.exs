@@ -4,7 +4,7 @@ defmodule Swap.Workers.RepositoryStoriesWorkerTest do
   use Swap.DataCase
   use Oban.Testing, repo: Swap.Repo, prefix: "jobs"
 
-  alias Swap.Clients.Github.Mock, as: GithubMock
+  alias Clients.Github.Mock, as: GithubMock
   alias Swap.Repositories.RepositoryStory
   alias Swap.Workers.RepositoryStoriesWorker
 

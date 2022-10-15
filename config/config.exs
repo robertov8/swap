@@ -29,7 +29,7 @@ config :phoenix, :json_library, Jason
 config :tesla, adapter: Tesla.Adapter.Hackney
 
 config :swap, client_github_base_url: "https://api.github.com"
-config :swap, client_github_adapter: Swap.Clients.Github.Http
+config :swap, client_github_adapter: Clients.Github.Http
 
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 config :swap, repo_enabled: System.get_env("REPO_ENABLED")

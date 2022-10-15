@@ -1,7 +1,7 @@
-defmodule Swap.Clients.Github.Response.Error do
+defmodule Clients.Github.Response.Error do
   @moduledoc false
 
-  @behaviour Swap.Clients.Github.Response
+  @behaviour Clients.Github.Response
 
   defstruct status: nil, reason: nil
 

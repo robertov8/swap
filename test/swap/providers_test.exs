@@ -4,7 +4,7 @@ defmodule Swap.ProvidersTest do
   use Swap.DataCase
 
   alias Swap.Cache
-  alias Swap.Clients.Github.Mock, as: GithubMock
+  alias Clients.Github.Mock, as: GithubMock
   alias Swap.Providers
   alias Swap.Providers.Response
 

@@ -1,11 +1,11 @@
-defmodule Swap.Clients.Github.Http do
+defmodule Clients.Github.Http do
   @moduledoc false
 
-  @behaviour Swap.Clients.Github
+  @behaviour Clients.Github
 
   use Tesla
 
-  alias Swap.Clients.Github.Response
+  alias Clients.Github.Response
   alias Tesla.Env
 
   @type response :: {:ok | :error, struct()}
