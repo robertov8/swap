@@ -39,7 +39,7 @@ defmodule Swap.WebhooksTest do
              ] = response
     end
 
-    test "list_webhooks/0 returns all webhooks by filter" do
+    test "list_webhooks/0 returns all webhooks sort sort_repository_token" do
       insert(:webhook, repository_token: "a")
       insert(:webhook, repository_token: "b")
       insert(:webhook, repository_token: "c")
@@ -60,6 +60,31 @@ defmodule Swap.WebhooksTest do
                %Webhook{repository_token: "c"},
                %Webhook{repository_token: "b"},
                %Webhook{repository_token: "a"}
+             ] = response
+    end
+
+    test "list_webhooks/0 returns all webhooks paginate" do
+      insert(:webhook, repository_token: "a")
+      insert(:webhook, repository_token: "b")
+      insert(:webhook, repository_token: "c")
+
+      page = 1
+      per_page = 2
+
+      response = Webhooks.list_webhooks(paginate: [page, per_page])
+
+      assert [
+               %Webhook{repository_token: nil},
+               %Webhook{repository_token: "a"}
+             ] = response
+
+      page = 2
+
+      response = Webhooks.list_webhooks(paginate: [page, per_page])
+
+      assert [
+               %Webhook{repository_token: "b"},
+               %Webhook{repository_token: "c"}
              ] = response
     end
 
@@ -84,6 +109,14 @@ defmodule Swap.WebhooksTest do
                  provider: :github
                }
              } = response
+    end
+
+    test "count_webhooks/0 return total webhooks" do
+      assert 1 == Webhooks.count_webhooks()
+
+      insert(:webhook)
+
+      assert 2 == Webhooks.count_webhooks()
     end
 
     test "create_webhook/1 with valid data creates a webhook" do
@@ -114,6 +147,12 @@ defmodule Swap.WebhooksTest do
       webhook = insert(:webhook)
       assert {:ok, %Webhook{}} = Webhooks.delete_webhook(webhook)
       refute Webhooks.get_webhook(webhook.id)
+    end
+
+    test "schedule_webhooks_job/1 schedule all webhooks" do
+      insert_list(4, :webhook)
+
+      assert {:ok, [total: 2, per_page: 2]} = Webhooks.schedule_webhooks_job(per_page: 2)
     end
   end
 end

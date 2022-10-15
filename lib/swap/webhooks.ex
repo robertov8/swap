@@ -108,4 +108,28 @@ defmodule Swap.Webhooks do
   def delete_webhook(%Webhook{} = webhook) do
     Repo.delete(webhook)
   end
+
+  @spec schedule_webhooks_job(opts :: Keyword.t() | nil) ::
+          {:ok, [{:per_page, integer} | {:total, integer}]}
+  def schedule_webhooks_job(opts \\ []) do
+    per_page = Keyword.get(opts, :per_page, 2)
+    total = div(count_webhooks(), per_page)
+
+    for page <- 1..total do
+      [paginate: [page, per_page]]
+      |> list_webhooks()
+      |> Enum.each(&schedule_job({&1, page}, Mix.env()))
+    end
+
+    {:ok, [total: total, per_page: per_page]}
+  end
+
+  defp schedule_job({webhook_id, _index}, :test), do: webhook_id
+
+  # coveralls-ignore-start
+  defp schedule_job({webhook, index}, _env) do
+    %{webhook_id: webhook.id}
+    |> WebhooksWorker.new(schedule_in: {index * @seconds, :seconds})
+    |> Oban.insert()
+  end
 end
