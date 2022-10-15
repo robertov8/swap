@@ -7,6 +7,9 @@ defmodule Swap.Webhooks do
   alias Swap.Repo
 
   alias Swap.Webhooks.{Webhook, WebhookQuery}
+  alias Swap.Workers.WebhooksWorker
+
+  @seconds 10
 
   @doc """
   Returns the list of webhooks.
@@ -14,6 +17,14 @@ defmodule Swap.Webhooks do
   ## Examples
 
       iex> list_webhooks()
+      [%Webhook{}, ...]
+      iex>
+      iex> list_webhooks(sort_repository_token: :asc)
+      [%Webhook{}, ...]
+      iex>
+      iex> page = 1
+      iex> per_page = 10
+      iex> list_webhooks(paginate: [page, per_page])
       [%Webhook{}, ...]
 
   """
@@ -24,12 +35,22 @@ defmodule Swap.Webhooks do
         {:sort_repository_token, direction} ->
           WebhookQuery.sort_repository_token(query, direction)
 
+        {:paginate, [page, per_page]} ->
+          WebhookQuery.with_paginate(page, per_page)
+
         _ ->
           query
       end
     end)
     |> preload(:repository)
     |> Repo.all()
+  end
+
+  @spec count_webhooks :: non_neg_integer()
+  def count_webhooks do
+    Webhook
+    |> select(fragment("COUNT(*)"))
+    |> Repo.one()
   end
 
   @doc """
