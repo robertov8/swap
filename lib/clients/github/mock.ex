@@ -1,9 +1,9 @@
-defmodule Swap.Clients.Github.Mock do
+defmodule Clients.Github.Mock do
   @moduledoc false
 
-  @behaviour Swap.Clients.Github
+  @behaviour Clients.Github
 
-  alias Swap.Clients.Github.Response
+  alias Clients.Github.Response
 
   @impl true
   def repo_issues(owner, repo, _token), do: repo_issues(owner, repo)
@@ -91,7 +91,7 @@ defmodule Swap.Clients.Github.Mock do
 
   def user(_username, _token) do
     {:ok,
-     %Swap.Clients.Github.Response.User{
+     %Clients.Github.Response.User{
        login: "robertov8",
        url: "https://api.github.com/users/robertov8",
        name: "Roberto Ribeiro",

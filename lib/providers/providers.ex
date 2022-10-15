@@ -1,10 +1,11 @@
-defmodule Swap.Providers do
+defmodule Providers do
   @moduledoc """
   Esse modulo contem a camada que junta todas as traduções e tomadas de decisões
   """
 
-  alias Swap.Providers.Response
+  alias Providers.Response
   alias Swap.Webhooks.Webhook
+  alias Utils.Cache
 
   @callback limit_reached(token :: String.t() | nil) :: {:ok | :error, any()}
 
@@ -62,10 +63,10 @@ defmodule Swap.Providers do
 
   defp parse_contributor(%Response.Contributor{name: name} = contributor, module, token) do
     user =
-      case Swap.Cache.get("users:#{name}") do
+      case Cache.get("users:#{name}") do
         nil ->
           user = module.get_user(name, token)
-          Swap.Cache.set("users:#{name}", user, ttl: @cache_user_in_seconds)
+          Cache.set("users:#{name}", user, ttl: @cache_user_in_seconds)
 
           user
 
@@ -76,5 +77,5 @@ defmodule Swap.Providers do
     Map.put(contributor, :user, user)
   end
 
-  defp get_provider(:github), do: Swap.Providers.Github
+  defp get_provider(:github), do: Providers.Github
 end

@@ -1,4 +1,4 @@
-defmodule Swap.Utils.HttpClient do
+defmodule Utils.HTTPClient do
   @moduledoc """
   This module contains the http client used to send requests to webhooks
   """

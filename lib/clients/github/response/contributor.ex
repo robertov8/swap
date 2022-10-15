@@ -1,7 +1,7 @@
-defmodule Swap.Clients.Github.Response.Contributor do
+defmodule Clients.Github.Response.Contributor do
   @moduledoc false
 
-  @behaviour Swap.Clients.Github.Response
+  @behaviour Clients.Github.Response
 
   defstruct id: nil, login: nil, contributions: nil, url: nil
 

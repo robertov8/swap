@@ -1,4 +1,4 @@
 ExUnit.start()
 Faker.start()
-Hammox.defmock(ClientFakeGithubMock, for: Swap.Clients.Github)
+Hammox.defmock(ClientFakeGithubMock, for: Clients.Github)
 Ecto.Adapters.SQL.Sandbox.mode(Swap.Repo, :manual)

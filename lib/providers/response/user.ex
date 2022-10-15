@@ -1,4 +1,4 @@
-defmodule Swap.Providers.Response.User do
+defmodule Providers.Response.User do
   @moduledoc false
 
   @derive {Jason.Encoder, only: [:login, :url, :name, :avatar_url, :company, :email]}

@@ -1,4 +1,4 @@
-defmodule Swap.Clients.Github do
+defmodule Clients.Github do
   @moduledoc false
 
   @type response :: {:ok | :error, atom() | list() | struct()}

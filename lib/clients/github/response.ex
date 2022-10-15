@@ -1,7 +1,7 @@
-defmodule Swap.Clients.Github.Response do
+defmodule Clients.Github.Response do
   @moduledoc false
 
-  alias Swap.Clients.Github.Response
+  alias Clients.Github.Response
 
   @callback parse(data :: map() | list() | number()) :: {:ok | :error, list() | struct()}
 

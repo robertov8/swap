@@ -11,9 +11,9 @@ defmodule Swap.Workers.WebhooksWorker do
   alias Swap.Notifications
   alias Swap.Repositories
   alias Swap.Repositories.RepositoryStory
-  alias Swap.Utils.HttpClient
   alias Swap.Webhooks
   alias Swap.Webhooks.Webhook
+  alias Utils.HTTPClient
 
   @impl true
   def perform(%Job{args: %{"webhook_id" => webhook_id}}) do
@@ -29,7 +29,7 @@ defmodule Swap.Workers.WebhooksWorker do
 
   defp make_post_request(%Webhook{target: target} = webhook, data) do
     target
-    |> HttpClient.make_post_request(data)
+    |> HTTPClient.make_post_request(data)
     |> create_notification(webhook)
   end
 

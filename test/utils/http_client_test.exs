@@ -1,4 +1,4 @@
-defmodule Swap.Utils.HttpClientTest do
+defmodule Utils.HTTPClientTest do
   @moduledoc false
 
   use ExUnit.Case
@@ -6,7 +6,7 @@ defmodule Swap.Utils.HttpClientTest do
   import Tesla.Mock
   import ExUnit.CaptureLog
 
-  alias Swap.Utils.HttpClient
+  alias Utils.HTTPClient
 
   describe "make_post_request/2" do
     setup do
@@ -23,7 +23,7 @@ defmodule Swap.Utils.HttpClientTest do
     end
 
     test "when the repository is valid, returns success" do
-      response = HttpClient.make_post_request("http://swap.com.br/webhook", %{"data" => %{}})
+      response = HTTPClient.make_post_request("http://swap.com.br/webhook", %{"data" => %{}})
 
       expected_response = {:ok, 200, %{"status" => "ok"}}
 
@@ -34,7 +34,7 @@ defmodule Swap.Utils.HttpClientTest do
       {_result, log} =
         with_log(fn ->
           response =
-            HttpClient.make_post_request("http://invalid.com.br/webhook", %{"data" => %{}})
+            HTTPClient.make_post_request("http://invalid.com.br/webhook", %{"data" => %{}})
 
           expected_response = {:error, 500, %{"status" => "error"}}
 
@@ -46,7 +46,7 @@ defmodule Swap.Utils.HttpClientTest do
       {_result, log} =
         with_log(fn ->
           response =
-            HttpClient.make_post_request("http://timeout.com.br/webhook", %{"data" => %{}})
+            HTTPClient.make_post_request("http://timeout.com.br/webhook", %{"data" => %{}})
 
           expected_response = {:error, :unknown, {:error, :timeout}}
 

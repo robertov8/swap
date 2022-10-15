@@ -1,11 +1,11 @@
-defmodule Swap.Clients.Github.HttpTest do
+defmodule Clients.Github.HttpTest do
   @moduledoc false
 
   use ExUnit.Case, async: true
 
   import Tesla.Mock
 
-  alias Swap.Clients.Github.{Http, Response}
+  alias Clients.Github.{Http, Response}
 
   describe "repo_issues/3" do
     setup do
@@ -173,7 +173,7 @@ defmodule Swap.Clients.Github.HttpTest do
 
       expected_response =
         {:error,
-         %Swap.Clients.Github.Response.Error{
+         %Clients.Github.Response.Error{
            reason: "Response if repository is empty",
            status: 204
          }}
@@ -230,7 +230,7 @@ defmodule Swap.Clients.Github.HttpTest do
 
       expected_response =
         {:ok,
-         %Swap.Clients.Github.Response.RateLimit{
+         %Clients.Github.Response.RateLimit{
            limit: 5000,
            remaining: 4999,
            reset: 1_372_700_873,
@@ -243,7 +243,7 @@ defmodule Swap.Clients.Github.HttpTest do
 
       expected_response =
         {:ok,
-         %Swap.Clients.Github.Response.RateLimit{
+         %Clients.Github.Response.RateLimit{
            limit: 5000,
            remaining: 4999,
            reset: 1_372_700_873,
