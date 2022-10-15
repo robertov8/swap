@@ -1,4 +1,4 @@
-defmodule Swap.Cache do
+defmodule Utils.Cache do
   @moduledoc false
 
   @table_name Swap

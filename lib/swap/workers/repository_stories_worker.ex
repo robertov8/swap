@@ -7,8 +7,8 @@ defmodule Swap.Workers.RepositoryStoriesWorker do
 
   require Logger
 
-  alias Providers.Response, as: ProviderResponse
   alias Oban.Job
+  alias Providers.Response, as: ProviderResponse
   alias Swap.Notifications
   alias Swap.Repositories
   alias Swap.Webhooks

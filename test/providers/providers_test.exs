@@ -3,9 +3,9 @@ defmodule Swap.ProvidersTest do
 
   use Swap.DataCase
 
-  alias Swap.Cache
   alias Clients.Github.Mock, as: GithubMock
   alias Providers.Response
+  alias Utils.Cache
 
   setup do
     Hammox.stub(ClientFakeGithubMock, :rate_limit, &GithubMock.rate_limit/1)

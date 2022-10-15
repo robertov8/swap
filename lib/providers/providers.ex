@@ -5,6 +5,7 @@ defmodule Providers do
 
   alias Providers.Response
   alias Swap.Webhooks.Webhook
+  alias Utils.Cache
 
   @callback limit_reached(token :: String.t() | nil) :: {:ok | :error, any()}
 
@@ -62,10 +63,10 @@ defmodule Providers do
 
   defp parse_contributor(%Response.Contributor{name: name} = contributor, module, token) do
     user =
-      case Swap.Cache.get("users:#{name}") do
+      case Cache.get("users:#{name}") do
         nil ->
           user = module.get_user(name, token)
-          Swap.Cache.set("users:#{name}", user, ttl: @cache_user_in_seconds)
+          Cache.set("users:#{name}", user, ttl: @cache_user_in_seconds)
 
           user
 
