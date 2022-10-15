@@ -1,4 +1,4 @@
-defmodule Swap.Providers.Response.Contributor do
+defmodule Providers.Response.Contributor do
   @moduledoc false
 
   @derive {Jason.Encoder, only: [:name, :user, :qtd_commits]}

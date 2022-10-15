@@ -1,4 +1,4 @@
-defmodule Swap.Providers.Response.Repository do
+defmodule Providers.Response.Repository do
   @moduledoc false
 
   @derive {Jason.Encoder, only: [:user, :repository, :issues, :contributors]}

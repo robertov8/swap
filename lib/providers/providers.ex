@@ -1,9 +1,9 @@
-defmodule Swap.Providers do
+defmodule Providers do
   @moduledoc """
   Esse modulo contem a camada que junta todas as traduções e tomadas de decisões
   """
 
-  alias Swap.Providers.Response
+  alias Providers.Response
   alias Swap.Webhooks.Webhook
 
   @callback limit_reached(token :: String.t() | nil) :: {:ok | :error, any()}
@@ -76,5 +76,5 @@ defmodule Swap.Providers do
     Map.put(contributor, :user, user)
   end
 
-  defp get_provider(:github), do: Swap.Providers.Github
+  defp get_provider(:github), do: Providers.Github
 end

@@ -5,8 +5,7 @@ defmodule Swap.ProvidersTest do
 
   alias Swap.Cache
   alias Clients.Github.Mock, as: GithubMock
-  alias Swap.Providers
-  alias Swap.Providers.Response
+  alias Providers.Response
 
   setup do
     Hammox.stub(ClientFakeGithubMock, :rate_limit, &GithubMock.rate_limit/1)

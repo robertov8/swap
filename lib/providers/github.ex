@@ -1,13 +1,13 @@
-defmodule Swap.Providers.Github do
+defmodule Providers.Github do
   @moduledoc """
   This module contains the translation layer between the response
   github and the response expected by the rest of the application
   """
 
-  @behaviour Swap.Providers
+  @behaviour Providers
 
   alias Clients.Github.Response, as: ClientResponse
-  alias Swap.Providers.Response, as: ProviderResponse
+  alias Providers.Response, as: ProviderResponse
 
   @impl true
   def limit_reached(token) do
