@@ -10,9 +10,5 @@ defmodule Swap.Workers.ScheduleWebhooksWorker do
   alias Swap.Webhooks
 
   @impl true
-  def perform(_job) do
-    Webhooks.schedule_webhooks_job()
-
-    :ok
-  end
+  def perform(_job), do: Webhooks.schedule_webhooks_job(per_page: 10)
 end
