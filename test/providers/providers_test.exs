@@ -13,6 +13,8 @@ defmodule Swap.ProvidersTest do
     Hammox.stub(ClientFakeGithubMock, :repo_contributors, &GithubMock.repo_contributors/3)
     Hammox.stub(ClientFakeGithubMock, :user, &GithubMock.user/2)
 
+    :ets.delete(Swap, "users:octocat")
+
     :ok
   end
 
@@ -39,7 +41,7 @@ defmodule Swap.ProvidersTest do
   describe "get_repo/2" do
     test "when the repository is valid, returns response" do
       repository = insert(:repository, name: "valid_repo")
-      webhook = insert(:webhook, repository: repository)
+      webhook = insert(:webhook, repository: repository, repository_token: nil)
 
       assert %Response.Repository{
                user: "swap",
@@ -87,10 +89,8 @@ defmodule Swap.ProvidersTest do
     end
 
     test "when user does not exist in cache, returns user from request" do
-      :ets.delete(Swap, "users:octocat")
-
       repository = insert(:repository, name: "valid_repo")
-      webhook = insert(:webhook, repository: repository)
+      webhook = insert(:webhook, repository: repository, repository_token: "token")
 
       refute Cache.get("users:octocat")
 
@@ -108,13 +108,13 @@ defmodule Swap.ProvidersTest do
                  %Response.Contributor{
                    name: "octocat",
                    qtd_commits: 32,
-                   user: %Response.User{
-                     avatar_url: nil,
+                   user: %Providers.Response.User{
+                     avatar_url: "https://avatars.githubusercontent.com/u/5904702?v=4",
                      company: nil,
                      email: nil,
-                     login: "octocat",
-                     name: nil,
-                     url: nil
+                     login: "robertov8",
+                     name: "Roberto Ribeiro",
+                     url: "https://api.github.com/users/robertov8"
                    }
                  }
                ]
@@ -124,10 +124,6 @@ defmodule Swap.ProvidersTest do
     end
 
     test "when user already exists in cache, returns user from cache" do
-      key = "users:octocat"
-
-      :ets.delete(Swap, key)
-
       user = %Response.User{
         avatar_url: nil,
         company: nil,
@@ -137,7 +133,7 @@ defmodule Swap.ProvidersTest do
         url: nil
       }
 
-      Cache.set(key, user)
+      Cache.set("users:octocat", user)
 
       repository = insert(:repository, name: "valid_repo")
       webhook = insert(:webhook, repository: repository)
