@@ -7,11 +7,8 @@ defmodule Swap.Workers.ScheduleWebhooksWorkerTest do
   alias Swap.Workers.ScheduleWebhooksWorker
 
   test "schedule all webhooks" do
-    [webhook1, webhook2] = insert_list(2, :webhook)
+    insert_list(10, :webhook)
 
-    assert {:ok, [webhook_job1, webhook_job2]} = perform_job(ScheduleWebhooksWorker, %{})
-
-    assert webhook1.id == webhook_job1.id
-    assert webhook2.id == webhook_job2.id
+    assert {:ok, [total: 1, per_page: 10]} = perform_job(ScheduleWebhooksWorker, %{})
   end
 end

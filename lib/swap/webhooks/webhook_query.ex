@@ -16,5 +16,15 @@ defmodule Swap.Webhooks.WebhookQuery do
     order_by(query, desc: :repository_token)
   end
 
+  @spec with_paginate(query :: any(), page :: non_neg_integer(), per_page :: non_neg_integer()) ::
+          Ecto.Query.t()
+  def with_paginate(query \\ base(), page, per_page) do
+    limit = (page - 1) * per_page
+
+    query
+    |> limit(^per_page)
+    |> offset(^limit)
+  end
+
   defp base, do: Webhook
 end
